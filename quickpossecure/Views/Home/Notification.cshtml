@@ -1,0 +1,77 @@
+﻿<main>
+    <div class="">
+        <h1 class="h2">Notifications</h1>
+        <hr />
+        <h4>Notificatoins List</h4>
+        <div class="grid">
+            <div class="row">
+                <div class="table-responsive">
+                    <table id="Notification_Table" class="table table-hover table-dark table-striped table-sm">
+                        <thead>
+                            <tr>
+                                <th scope="col">Id</th>
+                                <th scope="col">Date</th>
+                                <th scope="col">Title</th>
+                                <th scope="col">Text</th>
+                                <th scope="col">Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        
+    </div>
+</main>
+
+@section scripts{
+    <script>
+        PopulateData_Notifications()
+        function PopulateData_Notifications()
+        {
+            var spinner = new Spinner().spin();
+            $("#Notification_Table tbody").append(spinner.el);
+            $.ajax({
+                url: '/api/mainapi/Notification_getall',
+                success: function (data) {
+                    var fragment = document.createDocumentFragment();
+                    for (var i = 0; i < data.length; i++) {
+                        $(fragment).append("<tr><td>" + data[i]["id"] + "</td><td>" + data[i]["createdDate"] + "</td><td>" + data[i]["title"] + "</td><td>" + data[i]["text"] + "</td><td><span id='" + data[i]["id"] + "' data-feather='edit' onclick='Notification_Edit_Click_In_List(this.id)'></span></td></tr>");
+                    }
+                    $("#Notification_Table tbody").append(fragment);
+                    feather.replace();
+                    spinner.stop();
+                },
+                error: function (data) {
+                    alertify.error('Action Failed');
+                }
+            });
+        }
+        function Notification_Edit_Click_In_List(id)
+        {
+            showLoader();
+            CustomConsole("Clicked Id");
+            CustomConsole(id);
+            $.ajax({
+                url: '/api/mainapi/Notification_delete',
+                type: 'post',
+                data: { NotificationId:id},
+                success: function (data)
+                {
+                    if (data.status == "success") {
+                        alertify.success("Notification Deleted");
+                    }
+                    else
+                    {
+                        alertify.success("Notification Not Deleted");
+                    }
+                    hideLoader();
+                    window.location.reload();
+                }
+            })
+        }
+    </script>
+    }
+

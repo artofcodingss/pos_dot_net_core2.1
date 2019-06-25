@@ -1,0 +1,338 @@
+﻿<main>
+    <div class="container">
+        <h3 style="padding-top:10px;">New Purchase</h3>
+        <hr>
+        <div class="row">
+            <div class="col-8 bg-light">
+                <div class="form-group col-12">
+                    <label>Product</label>
+                    <input id="productquery" list="purchaseitems" onkeydown="valueEnteredinProductQueryInput(event)" class="form-control" />
+                    <datalist id="purchaseitems"></datalist>
+                </div>
+                <hr>
+                <div class="form-inline col-12">
+                    <label class="col-1">Id</label>
+                    <input id="InputProductId" class="form-control col-1" />
+                    <label class="col-1">Name</label>
+                    <input id="InputProductName" class="form-control col-5" />
+                    <label class="col-1">Price</label>
+                    <input id="InputProductPrice" onkeydown="valueEnteredinPriceQueryInput(event)" class="form-control col-1" />
+                    <label class="col-1">Quantity</label>
+                    <input id="InputProductQuantity" class="form-control col-1" />
+                </div>
+
+            </div>
+            <div class="col-4 text-white bg-info">
+                <label>Vendor</label>
+                <input id="vendorquery" list="vendoritems" onkeydown="valueEnteredinVendorQueryInput(event)" class="form-control" />
+                <datalist id="vendoritems"></datalist>
+                <hr>
+                <p style="font-size:11px">
+                    <span id="VendorName"></span>: <span id="VendorPhone"></span>: <span id="VendorId"></span>
+                </p>
+                <input type="checkbox" id="Ledger"> Ledger
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-8">
+                <table class="table table-responsive-md table-dark table-hover table-sm">
+                    <thead>
+                        <tr>
+                            <th>Product Id</th>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody1"></tbody>
+                </table>
+            </div>
+            <div class="col-4">
+                <p class="bg-success" style="font-size:25px;"> Total Bill : <span id="TotalBill">0</span></p>
+                <span>Total Payment :</span>
+                <input id="TotalPayment" type="number" />
+                <select id="All_Asset_Accounts_Selectlist"></select>
+                <button onclick="PurchaseDone()" class="btn btn-dark btn-sm">Purchase Done</button>
+            </div>
+        </div>
+        <hr>
+    </div>
+</main>
+@section scripts{
+    <script type="text/javascript">
+        var PurchaseList = new Array();
+        var Products = new Array();
+        var Vendors = new Array();
+        populateDataList();
+        $("#productquery").focus();
+        function populateDataList() {
+            $.ajax({
+                url: "/api/mainapi/product_getall?ActiveOnPurchase=true",
+                success: function (data) {
+                    console.log("Products from ajax");
+                    console.log(data);
+                    for (var i = 0; i < data.length; i++) {
+                        var Product = {};
+                        Product.id = data[i]["id"];
+                        Product.name = data[i]["name"];
+                        Product.barcode = data[i]["barcode"];
+                        Product.price = data[i]["purchasePrice"];
+                        Products.push(Product);
+                    }
+                    console.log("Products custom");
+                    console.log(Products);
+                    for (var i = 0; i < Products.length; i++) {
+
+                        $("#purchaseitems").append("<option id=" + Products[i]["id"] + ">" + Products[i]["name"] + ": " + Products[i]["price"] + ": " + Products[i]["barcode"] + "</option>");
+                    }
+                }
+            });
+            $.ajax({
+                url: "/api/mainapi/vendor_getall",
+                success: function (data) {
+                    console.log("Vendor from ajax request");
+                    console.log(data);
+                    for (var i = 0; i < data.length; i++) {
+                        var Vendor = {};
+                        Vendor.id = data[i]["id"];
+                        Vendor.name = data[i]["name"];
+                        Vendor.phone = data[i]["phone"];
+                        Vendors.push(Vendor);
+                    }
+                    console.log("Vendor custom Array");
+                    console.log(Vendors);
+                    for (var i = 0; i < Vendors.length; i++) {
+
+                        $("#vendoritems").append("<option id=" + Vendors[i]["id"] + ">" + Vendors[i]["name"] + ": " + Vendors[i]["phone"] + "</option>");
+                    }
+                }
+            });
+            $.ajax({
+                url: "/api/mainapi/finance_account_getAll",
+                success: function (data) {
+                    console.log("All Accounts");
+                    console.log(data);
+                    for (var i = 0; i < data.length; i++) {
+                        if (data[i]["financeAccountType"] == "Asset") {
+                            $("#All_Asset_Accounts_Selectlist").append("<option value=" + data[i]["id"] + ">" + data[i]["name"] + "</option>");
+                        }
+                    }
+                    $("#All_Asset_Accounts_Selectlist").val("102");
+                }
+            });
+        }
+        function valueEnteredinProductQueryInput(event) {
+            console.log("Value Entered");
+            if (event.key == "Enter") {
+                if ($("#InputProductId").val() != "") {
+                    console.log("Time To Add Product");
+                    var productid = $("#InputProductId").val();
+                    var productname = $("#InputProductName").val();
+                    var productPrice = $("#InputProductPrice").val();
+                    var productQuantity = $("#InputProductQuantity").val();
+                    if ($("#InputProductPrice").val() == "") {
+                        $("#InputProductPrice").focus();
+                        alertify.error("Please Enter Purchase Price");
+                        return false;
+                    }
+                    var purchasingProductObject = { id: productid, name: productname, price: parseFloat(productPrice), quantity: parseFloat(productQuantity) };
+                    addProductToPurchaseList(purchasingProductObject);
+                    return;
+                }
+            }
+            else {
+                $("#InputProductId").val("");
+                $("#InputProductName").val("");
+                $("#InputProductPrice").val("");
+                $("#InputProductQuantity").val("");
+            };
+            var query = $("#productquery").val();
+            var option = $("#purchaseitems option");
+            for (var i = 0; i < option.length; i++) {
+                var innserText = option[i].innerText.trim();
+                if (query === innserText) {
+                    //selecting product form array with datalist id
+                    for (var j = 0; j < Products.length; j++) {
+                        if (Products[j]["id"] == option[i].id) {
+                            console.log(Products[j]);
+                            $("#InputProductId").val(Products[j]["id"]);
+                            $("#InputProductName").val(Products[j]["name"]);
+                            $("#InputProductPrice").val(Products[j]["price"]);
+                            $("#InputProductQuantity").val("1");
+                            $("#productquery").val("");
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+        function valueEnteredinVendorQueryInput(event) {
+            var query = $("#vendorquery").val();
+            var option = $("#vendoritems option");
+            for (var i = 0; i < option.length; i++) {
+                var innserText = option[i].innerText;
+                if (query === innserText) {
+                    //selecting product form array with datalist id
+                    for (var j = 0; j < Vendors.length; j++) {
+                        if (Vendors[j]["id"] == option[i].id) {
+                            console.log(Vendors[j]);
+                            $("#VendorId").text(Vendors[j]["id"]);
+                            $("#VendorName").text(Vendors[j]["name"]);
+                            $("#VendorPhone").text(Vendors[j]["phone"]);
+
+                            $("#TotalPayment").val("");
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+        function valueEnteredinPriceQueryInput(event) {
+            if (event.key == "Enter")
+            {
+                $("#productquery").focus();
+            }
+            
+        }
+        function addProductToPurchaseList(o) {
+            console.log(o);
+            for (var i = 0; i < PurchaseList.length; i++) {
+                if (PurchaseList[i]["id"] == o["id"]) {
+                    PurchaseList[i]["quantity"] += 1;
+                    console.log(PurchaseList);
+                    UpdateTable();
+                    return;
+                }
+            }
+            PurchaseList.push(o);
+            console.log(PurchaseList);
+            UpdateTable();
+        }
+        function minusProductFromPurchaseList(o) {
+            console.log(o);
+            for (var i = 0; i < PurchaseList.length; i++) {
+                if (PurchaseList[i]["id"] == o["id"]) {
+                    if (PurchaseList[i]["quantity"] > 1) {
+                        PurchaseList[i]["quantity"] -= 1;
+                    }
+                    else {
+                        deleteProductFromPurchaseList(o);
+                    }
+                    console.log(PurchaseList);
+                    UpdateTable();
+                    return;
+                }
+            }
+        }
+        function deleteProductFromPurchaseList(o) {
+            console.log(o);
+            for (var i = 0; i < PurchaseList.length; i++) {
+                if (PurchaseList[i]["id"] == o["id"]) {
+                    PurchaseList.splice(i, 1);
+                    console.log(PurchaseList);
+                    UpdateTable();
+                    return;
+                }
+            }
+        }
+        function UpdateTable() {
+            $("#tbody1").empty();
+            var TotalBill = 0;
+            for (var i = 0; i < PurchaseList.length; i++) {
+                var itemTotal = PurchaseList[i]["price"] * PurchaseList[i]["quantity"];
+                $("#tbody1").append("<tr id='row" + PurchaseList[i]["id"] + "'><td>" + PurchaseList[i]["id"] + "</td><td>" + PurchaseList[i]["name"] + "</td><td>" + PurchaseList[i]["price"] + "</td><td>" + PurchaseList[i]["quantity"] + "</td><td>" + itemTotal + "</td><td><span id='span" + PurchaseList[i]["id"] + "' onclick='addItemFromTable(this.id)' data-feather='plus-square'></span>  <span id='span" + PurchaseList[i]["id"] + "' onclick='minusItemFromTable(this.id)' data-feather='minus-square'></span>  <span id='span" + PurchaseList[i]["id"] + "' onclick='deleteItemFromTable(this.id)' data-feather='delete'></span></td></tr>");
+                TotalBill += itemTotal;
+            }
+            feather.replace();
+            $("#TotalBill").text(TotalBill);
+        }
+        function addItemFromTable(id) {
+            var splicedId = id.substring(4);
+            var productRowId = "row" + splicedId;
+            var product = getProductFromTableRow(productRowId);
+            addProductToPurchaseList(product);
+        }
+        function minusItemFromTable(id) {
+            var splicedId = id.substring(4);
+            var productRowId = "row" + splicedId;
+            var product = getProductFromTableRow(productRowId);
+            minusProductFromPurchaseList(product);
+        }
+        function deleteItemFromTable(id) {
+            var splicedId = id.substring(4);
+            var productRowId = "row" + splicedId;
+            var product = getProductFromTableRow(productRowId);
+            deleteProductFromPurchaseList(product);
+        }
+        function getProductFromTableRow(productRowId) {
+            var productRowChildren = $("#" + productRowId).children();
+            var product = {};
+            product.id = productRowChildren[0].innerText;
+            product.name = productRowChildren[1].innerText;
+            product.price = parseFloat(productRowChildren[2].innerText);
+            product.quantity = parseFloat(productRowChildren[3].innerText);
+            return product;
+        }
+        function PurchaseDone() {
+            
+
+            var SaleModel = {};
+            if (PurchaseList.length == 0) {
+                alertify.error("Please select product");
+
+                return false;
+            }
+            if ($("#VendorId").text() == "") {
+                alertify.error("Please select vendor");
+       
+                return false;
+            }
+            if ($("#TotalPayment").val() == "")
+            {
+                alertify.error("Please Enter paying amount. enter 0 if no amount paying");
+
+                return false;
+            }
+            if (parseFloat($("#TotalPayment").val()) > parseFloat($("#TotalBill").text())) 
+            {
+                alertify.error("Payment is greater then bill");
+
+                return false;
+            }
+            SaleModel.Ledger = false;
+            if ($("#Ledger").is(':checked') == true) {
+                if (parseFloat($("#TotalPayment").val()) >= parseFloat($("#TotalBill").text())) {
+                    alertify.error("Payment Should be less than Bill for ledger");
+                    return false;
+                }
+                SaleModel.Ledger = true;
+            }
+            SaleModel.CustomerId = parseFloat($("#VendorId").text());
+            SaleModel.TotalBill = parseFloat($("#TotalBill").text());
+            SaleModel.FinanceAccountId = parseInt($("#All_Asset_Accounts_Selectlist").val());
+            SaleModel.TotalPayment = parseFloat($("#TotalPayment").val());
+            SaleModel.SaleList = PurchaseList;
+            console.log(SaleModel);
+            alertify.success("Saving");
+            $.ajax({
+                url: "/api/mainapi/NewPurchase",
+                type:"post",
+                data: SaleModel,
+                success: function (data) {
+                    console.log(data);
+                    if (data == true) {
+                        hideLoader();
+                        window.location.reload();
+                    } else
+                    {
+                        hideLoader();
+                        alertify.error("Some Error Occured");
+                    }
+                }
+            });
+        }
+    </script>
+}

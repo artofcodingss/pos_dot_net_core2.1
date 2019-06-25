@@ -1,0 +1,7 @@
+﻿dotnet ef dbcontext scaffold "server=localhost;port=3306;database=quickpos;user=root" "Pomelo.EntityFrameworkCore.MySql" -c MyDbContext -o Models\dbentities -f
+
+Scaffold-DbContext "server=localhost;port=3306;database=quickpos;user=root" "Pomelo.EntityFrameworkCore.MySql" -context MyDbContext -o Models\dbentities -f
+
+
+dotnet publish -c release -r win10-x64
+dotnet publish -c release -r win10-x86

@@ -1,0 +1,414 @@
+﻿<div class="child_div_inlineblock estimates_cards_div">
+    <div class="atta_card">
+        <div>
+            <p style="font-size:14px;font-weight:bold" class="text-success">
+                &nbsp;&nbsp;&nbsp;TOTAL SALES (PKR) &nbsp;&nbsp;&nbsp;
+            </p>
+        </div>
+        <div>
+            <p style="font-size:32px;" class="" id="TotalSale">0</p>
+        </div>
+        <div>
+            <p style="font-size:14px;font-weight:bold" class="text-info">Today: PKR <span id="TotalSaleToday">0</span></p>
+        </div>
+    </div>
+    <div class="atta_card">
+        <div>
+            <p style="font-size:14px;font-weight:bold" class="text-success">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TOTAL PRODUCTS &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </p>
+        </div>
+        <div>
+            <p style="font-size:32px;" class="" id="TotalProduct">0</p>
+        </div>
+        <div>
+            <p style="font-size:14px;font-weight:bold" class="text-info">Today: PKR 0</p>
+        </div>
+    </div>
+    <div class="atta_card">
+        <div>
+            <p style="font-size:14px;font-weight:bold" class="text-success">
+                &nbsp;&nbsp;&nbsp; TOTAL CUSTOMERS &nbsp;&nbsp;&nbsp;
+            </p>
+        </div>
+        <div>
+            <p style="font-size:32px;" class="" id="TotalCustomer">0</p>
+        </div>
+        <div>
+            <p style="font-size:14px;font-weight:bold" class="text-info">
+                Today: PKR 0
+            </p>
+        </div>
+    </div>
+    <div class="atta_card">
+        <div>
+            <p style="font-size:14px;font-weight:bold" class="text-success">TOTAL PROFIT</p>
+        </div>
+        <div>
+            <p style="font-size:32px;" class="" id="TotalProfit">0</p>
+        </div>
+        <div>
+            <p style="font-size:14px;font-weight:bold" class="text-info">Today: PKR <span id="TotalProfitToday"></span></p>
+        </div>
+    </div>
+    <button onclick="PopulateData()" class="btn btn-sm btn-outline-primary">Show Stats</button>
+</div>
+
+<div class="child_div_inlineblock">
+    <div class="" style="width:70%">
+        <div style="border:1px solid lightgrey">
+            <canvas id="chart1" style="height:30%;width: 55rem"></canvas>
+        </div>
+        <div style="margin-top: 10px;border:1px solid lightgrey">
+            <canvas id="chart2" style="height:30%;width: 55rem;"></canvas>
+        </div>
+    </div>
+    <div style="width:1%"> </div>
+    <div class="" style="width:28%; height: 19.5rem;float: right;border:1px solid lightgrey;padding: 0px 15px;overflow-x:auto">
+        <div>
+            <p style="font-size:20px" class="text-info">Notification</p>
+        </div>
+        <div id="AllNotificationsOnIndex">
+            
+        </div>
+    </div>
+</div>
+
+@section scripts{
+<script>
+    PopulateData();
+    function PopulateData()
+    {
+        $.ajax({
+            url: '/api/mainapi/customer_getall',
+            success: function (data) {
+                $("#TotalCustomer").text(data.length);
+            }
+        }).then(() => {
+            $.ajax({
+                url: '/api/mainapi/product_getall',
+                success: function (data) {
+                    $("#TotalProduct").text(data.length);
+                }
+            }).then(() => {
+                $.ajax({
+                    url: '/api/mainapi/finance_account_getAll_sum_all_transactions',
+                    success: function (data) {
+                        console.log("All Finance Accounts with amount sum");
+                        console.log(data);
+                        var IncomeToday = 0;
+                        var IncomeMonth = 0;
+                        //var IncomeTotal = 0;
+                        var ExpenceToday = 0;
+                        var ExpenceMonth = 0;
+                        //var ExpenceTotal = 0;
+                        for (var i = 0; i < data.length; i++) {
+                            if (data[i]['name'] == "Products Sale") {
+                                $("#TotalSaleToday").text(-data[i]["today"]);
+                                $("#TotalSale").text(-data[i]["month"]);
+                                //$("#SaleTotal").text(-data[i]["total"]);
+                                IncomeToday += data[i]["today"];
+                                IncomeMonth += data[i]["month"];
+                                //IncomeTotal += data[i]["total"];
+                            }
+                            else if (data[i]['name'] == "Cost Of Goods Sold") {
+
+                                //$("#PurchaseToday").text(data[i]["today"]);
+                                //$("#PurchaseMonth").text(data[i]["month"]);
+                                //$("#PurchaseTotal").text(data[i]["total"]);
+                                ExpenceToday += data[i]["today"];
+                                ExpenceMonth += data[i]["month"];
+                                //ExpenceTotal += data[i]["total"];
+
+
+                            }
+                            else if (data[i]['name'] == "Account Payable") {
+                                //$("#APToday").text(-data[i]["today"]);
+                               // $("#APMonth").text(-data[i]["month"]);
+                                //$("#APTotal").text(-data[i]["total"]);
+                            } else if (data[i]['name'] == "Account Receivables") {
+                                //$("#ARToday").text(data[i]["today"]);
+                                //$("#ARMonth").text(data[i]["month"]);
+                                //$("#ARTotal").text(data[i]["total"]);
+                            }
+                            else if (data[i]['name'] == "Other Expences") {
+                                //$("#ExpenceToday").text(data[i]["today"]);
+                                //$("#ExpenceMonth").text(data[i]["month"]);
+                                //$("#ExpenceTotal").text(data[i]["total"]);
+                            }
+                            else if (data[i]['name'] == "Discounts") {
+                                //$("#DiscountsToday").text(data[i]["today"]);
+                                //$("#DiscountsMonth").text(data[i]["month"]);
+                                //$("#DiscountsTotal").text(data[i]["total"]);
+                            }
+                        }
+                        $("#TotalProfitToday").text(-(IncomeToday + ExpenceToday));
+                        $("#TotalProfit").text(-(IncomeMonth + ExpenceMonth));
+                        //$("#ProfitTotal").text(-(IncomeTotal + ExpenceTotal));
+                    }
+                }).then(() => {
+                    $.ajax({
+                        url: '/api/mainapi/notification_getall',
+                        success: function (data) {
+                            console.log(data);
+                            data.forEach((el) => {
+                                let notificationClass = "bg-success";
+                                if (el.type == "yellow") {
+                                    notificationClass = "bg-warning"
+                                }
+                                else if (el.type == "red")
+                                {
+                                    notificationClass = "bg-danger"
+                                }
+                                else if (el.type == "blue")
+                                {
+                                    notificationClass = "bg-primary"
+                                }
+                                $("#AllNotificationsOnIndex").append('<p style="font-size:12px;padding:5px 10px;color:white;border-radius:3px" class="' + notificationClass+'">'+el.text+'</p>');
+
+                            })
+                        }
+                    })
+                    })
+                })
+            });
+    }
+    lastFivemonthNames = [];
+    var monthindex = 0;
+    for (let i = 0; i < 5; i++)
+    {
+        lastFivemonthNames.push(allmonthNames[(new Date().getMonth() - monthindex)]);
+        monthindex++;
+    }
+    lastFivemonthNames.reverse();
+    console.log(lastFivemonthNames);
+    var data1 = {
+        labels: lastFivemonthNames,
+        datasets: [
+            {
+                label: "Sales Graph",
+                fill: false,
+                lineTension: 0.1,
+                backgroundColor: "#303F9F",
+                borderColor: "#303F9F",
+                borderCapStyle: 'butt',
+                borderDash: [],
+                borderDashOffset: 0.0,
+                borderJoinStyle: 'miter',
+                pointBorderColor: "#303F9F",
+                pointBackgroundColor: "#fff",
+                pointBorderWidth: 1,
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: "#303F9F",
+                pointHoverBorderColor: "#303F9F",
+                pointHoverBorderWidth: 2,
+                pointRadius: 5,
+                pointHitRadius: 10,
+                data: [65, 51, 50, 40, 56],
+            }
+        ]
+    };
+    var data2 = {
+        labels: lastFivemonthNames,
+        datasets: [
+            {
+                label: "Orders History",
+                fill: false,
+                lineTension: 0.1,
+                backgroundColor: "#388E3C",
+                borderColor: "#388E3C",
+                borderCapStyle: 'butt',
+                borderDash: [],
+                borderDashOffset: 0.0,
+                borderJoinStyle: 'miter',
+                pointBorderColor: "#388E3C",
+                pointBackgroundColor: "#fff",
+                pointBorderWidth: 1,
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: "#388E3C",
+                pointHoverBorderColor: "#388E3C",
+                pointHoverBorderWidth: 2,
+                pointRadius: 5,
+                pointHitRadius: 10,
+                data: [35, 51, 20, 50, 45],
+            }
+        ]
+    };
+    var canvas = document.getElementById('chart1');
+    var ctx1 = canvas.getContext("2d");
+    var myLineChart1 = new Chart(ctx1, {
+        type: 'line',
+        data: data1,
+        options: {
+            maintainAspectRatio: false,
+            scales: {
+                xAxes: [{
+                    gridLines: {
+                        display: false
+                    }
+                }],
+                yAxes: [{
+                    gridLines: {
+                        display: false
+                    }
+                }]
+            }
+        }
+    });
+    var canvas2 = document.getElementById('chart2');
+    var ctx2 = canvas2.getContext("2d");
+    var myLineChart1 = new Chart(ctx2, {
+        type: 'line',
+        data: data2,
+
+        options: {
+            maintainAspectRatio: false,
+            scales: {
+                xAxes: [{
+                    gridLines: {
+                        display: false
+                    }
+                }],
+                yAxes: [{
+                    gridLines: {
+                        display: false
+                    }
+                }]
+            }
+        }
+    });
+    //var topnavigationactivemenuid = localStorage.getItem("topnavigationactivemenu");
+    //console.log(topnavigationactivemenuid);
+    //$(("#" + topnavigationactivemenuid)).addClass("main_navagation_button_active");
+    //function topnavigationlinkclicked(event, url, element) {
+    //    localStorage.setItem("topnavigationactivemenu", element);
+    //    event.preventDefault();
+    //    console.log("event");
+    //    console.log(url);
+    //    console.log(element);
+    //    event.stopPropagation();
+    //    window.location = url;
+    //    return false;
+    //}
+
+    
+</script>
+    @*<script>
+        function PopulateData() {
+            var spinner = new Spinner().spin();
+            $("body").append(spinner.el);
+            $.ajax({
+                url: '/api/mainapi/customer_getall',
+                success: function (data) {
+                    console.log("All Customers");
+                    console.log(data);
+                    $("#Customer").text(data.length);
+                    spinner.stop();
+                }
+            });
+            $.ajax({
+                url: '/api/mainapi/product_getall',
+                success: function (data) {
+                    console.log("All Products");
+                    console.log(data);
+                    $("#Product").text(data.length);
+                }
+            });
+            $.ajax({
+                url: '/api/mainapi/finance_account_getAll_sum_all_transactions',
+                success: function (data) {
+                    console.log("All Finance Accounts with amount sum");
+                    console.log(data);
+                    var IncomeToday = 0;
+                    var IncomeMonth = 0;
+                    var IncomeTotal = 0;
+                    var ExpenceToday = 0;
+                    var ExpenceMonth = 0;
+                    var ExpenceTotal = 0;
+                    for (var i = 0; i < data.length; i++) {
+                        if (data[i]['name'] == "Products Sale") {
+                            $("#SaleToday").text(-data[i]["today"]);
+                            $("#SaleMonth").text(-data[i]["month"]);
+                            $("#SaleTotal").text(-data[i]["total"]);
+                            IncomeToday += data[i]["today"];
+                            IncomeMonth += data[i]["month"];
+                            IncomeTotal += data[i]["total"];
+                        }
+                        else if (data[i]['name'] == "Cost Of Goods Sold") {
+
+                            $("#PurchaseToday").text(data[i]["today"]);
+                            $("#PurchaseMonth").text(data[i]["month"]);
+                            $("#PurchaseTotal").text(data[i]["total"]);
+                            ExpenceToday += data[i]["today"];
+                            ExpenceMonth += data[i]["month"];
+                            ExpenceTotal += data[i]["total"];
+
+
+                        }
+                        else if (data[i]['name'] == "Account Payable") {
+                            $("#APToday").text(-data[i]["today"]);
+                            $("#APMonth").text(-data[i]["month"]);
+                            $("#APTotal").text(-data[i]["total"]);
+                        } else if (data[i]['name'] == "Account Receivables") {
+                            $("#ARToday").text(data[i]["today"]);
+                            $("#ARMonth").text(data[i]["month"]);
+                            $("#ARTotal").text(data[i]["total"]);
+                        }
+                        else if (data[i]['name'] == "Other Expences") {
+                            $("#ExpenceToday").text(data[i]["today"]);
+                            $("#ExpenceMonth").text(data[i]["month"]);
+                            $("#ExpenceTotal").text(data[i]["total"]);
+                        }
+                        else if (data[i]['name'] == "Discounts") {
+                            $("#DiscountsToday").text(data[i]["today"]);
+                            $("#DiscountsMonth").text(data[i]["month"]);
+                            $("#DiscountsTotal").text(data[i]["total"]);
+                        }
+                    }
+                    $("#ProfitToday").text(-(IncomeToday + ExpenceToday));
+                    $("#ProfitMonth").text(-(IncomeMonth + ExpenceMonth));
+                    $("#ProfitTotal").text(-(IncomeTotal + ExpenceTotal));
+                }
+            });
+            LoadChart();
+        }
+        function LoadChart() {
+            $("#myChartDiv").show();
+            new Chart(document.getElementById("myChart").getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: getLabels(),
+                    datasets: [{
+                        data: [4000, 5000, 10000, 30000, 40000, 4000, 5000, 10000, 30000, 40000, 4000, 5000],
+                        label: "Sale",
+                        borderColor: "#00cc00"
+                    }, {
+                        data: [2500, 5000, 9000, 8000, 6000, 4000, 5000, 10000, 4000, 20000, 4000, 1000],
+                        label: "Purchase",
+                        borderColor: "#ff3300"
+                    }
+                    ]
+                }
+            });
+        }
+
+        function getLabels() {
+            var theMonths = new Array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
+            var today = new Date();
+            var aMonth = today.getMonth() + 1;
+            var ayear = today.getFullYear() - 1;
+            var i;
+            var newmonths = new Array();
+            for (i = 0; i < 12; i++) {
+                newmonths.push(theMonths[aMonth] + " " + ayear);
+                aMonth++;
+                if (aMonth > 11) {
+                    aMonth = 0;
+                    ayear += 1;
+                }
+            };
+            return newmonths;
+        }
+    </script>*@
+    
+}

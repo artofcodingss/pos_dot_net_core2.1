@@ -1,0 +1,600 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>New Sale</title>
+    <link href="~/libs/bootstrap.css" rel="stylesheet" />
+    <link href="~/libs/alertify.min.css" rel="stylesheet" />
+    <link href="~/libs/alertifybootstrap.min.css" rel="stylesheet" />
+    <style>
+        /*time and date*/
+        .clocklg {
+            color: #17D4FE;
+            font-size: 45px;
+        }
+
+        .clocksm {
+            color: #17D4FE;
+            font-size: 15px;
+        }
+
+        #DateStamp {
+            color: #17D4FE;
+            font-size: 15px;
+            padding-top: 22px;
+        }
+        .feather {
+            width: 22px;
+            height: 22px;
+            vertical-align: text-bottom;
+            color: limegreen !important;
+        }
+        .feather-plus-square {
+            color: greenyellow !important;
+        }
+
+        .feather-minus-square {
+            color: cornflowerblue !important;
+        }
+    </style>
+</head>
+<body style="background-color:#656550;">
+    <div class="">
+        <div class="badge-dark">
+            <div style="position:absolute">
+                <a href="~/Home">
+                <img src="~/images/UGS-HEADER-LOGO.png" width="30%" />
+
+                </a>
+            </div>
+            <div>
+                <h3 class="h-100 text-center" style="padding-top:5px; padding-bottom:15px">New Sale 
+                    <span style="float:right;width:300px">
+                        <span class="clocklg" id="dc_hour"></span>
+                        <span class="clocksm" id="dc_second"></span>
+                        <span class="clocksm" id="dc_ampm"></span>
+                        <span id="DateStamp"></span>
+                    </span>
+                
+                </h3>
+            </div>
+
+            
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-9" style="background-color:#6A7783">
+                <div class="form-group  col-12">
+                    <label>Product</label>
+                    <input id="productquery" list="salingitems" style="border-color:red;" onkeydown="valueEnteredinProductQueryInput(event)" class="form-control" />
+                    <datalist id="salingitems"></datalist>
+                </div>
+                <hr>
+                <div class="form-inline  col-12">
+                    <label class="col-1">Id</label>
+                    <input id="InputProductId" class="form-control col-1" />
+                    <label class="col-1">Name</label>
+                    <input id="InputProductName" class="form-control col-3" />
+                    <label class="col-1">Price</label>
+                    <input id="InputProductPrice" class="form-control col-1" />
+                    <label class="col-1">Discount</label>
+                    <input id="InputProductDiscount" class="form-control col-1" />
+                    <label class="col-1">Quantity</label>
+                    <input id="InputProductQuantity" class="form-control col-1" />
+                </div>
+                <hr>
+            </div>
+            <div class="col-3 text-white" style="background-color:#665567">
+                <div class="">
+                    <label class="text-center">Customer</label>
+                    <input id="customerquery" list="customeritems" onkeydown="valueEnteredinCustomerQueryInput(event)" class="form-control" />
+                    <datalist id="customeritems"></datalist>
+                    <hr>
+                    <p>
+                        <span id="CustomerId"></span> : <span id="CustomerName"></span> : <span id="CustomerPhone"></span><span data-feather="delete" onclick="unSelectCustomer()"></span>
+                    </p>
+                    <input type="checkbox" id="Ledger"> Ledger
+                    
+                </div>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-9">
+                <div style="height:100%;background-color: #656567">
+
+                    <table class="table table-hover table-dark table-striped table-sm">
+                        <thead>
+                            <tr>
+                                <th>Product Id</th>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Discount</th>
+                                <th>Discounted Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody1"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-3">
+                <div>
+                    <p class="bg-secondary text-center text-white"><span>Bill : </span><span id="TotalBill">0</span></p>
+                    <p class="bg-success text-center card text-white">Discounted Bill: <span style="font-size:30px;" id="DiscountedBill">0</span></p>
+                    <div class="form-inline form-group">
+                        <label>Total Payment :</label>
+                        <input id="TotalPayment" type="number" style="border-color:red;" class="form-control" />
+                    </div>
+                    <input type="checkbox" checked id="PrintReceipt"> Print
+                    <button onclick="SaleThroughtSaleButton()" class="btn btn-dark btn-lg form-control">Sale Done</button>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="Modal_GetChangeWhenSaleDone">
+        <div class="modal-dialog">
+            <div  class="modal-content">
+                <div class="modal-header">Change</div>
+                <div class="modal-body">
+                    
+                    <label>Bill</label>
+                    <input type="number" class="form-control" id="ChangeModal_Input_DiscountdBill"/>
+                    <label>Payment</label>
+                    <input type="number" class="form-control" id="ChangeModal_Input_TotalPaying" oninput="ChangeModal_Input_TotalPaying_OnKeyDownEvent()"/>
+                    <label>Change</label>
+                    <div style="background-color:red;width:100%;text-align:center;">
+                    <p id="ChangeModal_Para_Change"style="font-size:30px;color:white">0</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="btn btn-success btn-lg" onclick="ChangeGotForm_ChangeModal()">Done Sale</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="fixed-bottom text-center text-white bg-success">
+        <div class="container">
+            <span>&copy; 2018 - POS. Develpoed By <a class="text-white" href="http://www.quicklinqs.com">Quicklinqs.com</a> , Lahore.</span>
+        </div>
+    </footer>
+    <script src="~/libs/jquery.min.js"></script>
+    <script src="~/libs/popper.min.js"></script>
+    <script src="~/libs/bootstrap.js"></script>
+    <script src="~/libs/feather.js"></script>
+    <script src="~/libs/alertify.min.js"></script>
+    <script src="~/libs/spin.js"></script>
+    <script src="~/js/home.js"></script>
+    <script type="text/javascript">
+        $("#productquery").focus();
+        var SaleList = new Array();
+        var Products = new Array();
+        var Customers = new Array();
+        populateDataList();
+        function valueEnteredinProductQueryInput(event) {
+
+            if (event.key == "End")
+            {
+                ShowChangeModalForGettingChange();
+            }
+            if (event.key == "Enter") {
+                if ($("#InputProductId").val() != "") {
+                    console.log("Time To Add Product");
+                    var productid = $("#InputProductId").val();
+                    var productname = $("#InputProductName").val();
+                    var productPrice = $("#InputProductPrice").val();
+                    var productDiscount = $("#InputProductDiscount").val();
+                    var productQuantity = $("#InputProductQuantity").val();
+                    var SaleItem = { id: productid, name: productname, price: parseFloat(productPrice), discount: parseFloat(productDiscount), quantity: parseFloat(productQuantity) };
+                    addProductToSaleList(SaleItem);
+                    return;
+                }
+            }
+            else {
+                $("#InputProductId").val("");
+                $("#InputProductName").val("");
+                $("#InputProductPrice").val("");
+                $("#InputProductDiscount").val("");
+                $("#InputProductQuantity").val("");
+            };
+            var query = $("#productquery").val();
+            var option = $("#salingitems option");
+            for (var i = 0; i < option.length; i++) {
+                var innserText = option[i].innerText;
+                if (query === innserText) {
+                    //selecting product form array with datalist id
+                    for (var j = 0; j < Products.length; j++) {
+                        if (Products[j]["id"] == option[i].id) {
+                            console.log(Products[j]);
+                            $("#InputProductId").val(Products[j]["id"]);
+                            $("#InputProductName").val(Products[j]["name"]);
+                            $("#InputProductPrice").val(Products[j]["price"]);
+                            $("#InputProductDiscount").val(Products[j]["discount"]);
+                            $("#InputProductQuantity").val("1");
+                            $("#productquery").val("");
+
+                            // new code for auto matic add product to sale list
+                            var productid = $("#InputProductId").val();
+                            var productname = $("#InputProductName").val();
+                            var productPrice = $("#InputProductPrice").val();
+                            var productDiscount = $("#InputProductDiscount").val();
+                            var productQuantity = $("#InputProductQuantity").val();
+                            var SaleItem = { id: productid, name: productname, price: parseFloat(productPrice), discount: parseFloat(productDiscount), quantity: parseFloat(productQuantity) };
+                            addProductToSaleList(SaleItem);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+        function valueEnteredinCustomerQueryInput(event) {
+            var query = $("#customerquery").val();
+            var option = $("#customeritems option");
+            for (var i = 0; i < option.length; i++) {
+                var innserText = option[i].innerText;
+                if (query === innserText) {
+                    //selecting product form array with datalist id
+                    for (var j = 0; j < Customers.length; j++) {
+                        if (Customers[j]["id"] == option[i].id) {
+                            console.log(Products[j]);
+                            $("#CustomerId").text(Customers[j]["id"]);
+                            $("#CustomerName").text(Customers[j]["name"]);
+                            $("#CustomerPhone").text(Customers[j]["phone"]);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+        function populateDataList() {
+            $.ajax({
+                url: "/api/mainapi/product_getall?ActiveOnSale=true",
+                success: function (data) {
+                    console.log("Product for ajax");
+                    console.log(data);
+                    for (var i = 0; i < data.length; i++) {
+                        var Product = {};
+                        Product.id = data[i]["id"];
+                        Product.name = data[i]["name"];
+                        Product.barcode = data[i]["barcode"];
+                        Product.price = data[i]["salePrice"];
+                        Product.quantity = data[i]["quantity"];
+                        var discount = 0;
+                        if (data[i]["discount"] != null) {
+                            discount = data[i]["discount"]
+                        }
+                        Product.discount = discount;
+                        Products.push(Product);
+                    }
+                    console.log("Product customer object");
+                    console.log(Products);
+
+                    for (var i = 0; i < Products.length; i++) {
+
+                        $("#salingitems").append("<option id=" + Products[i]["id"] + ">" + Products[i]["name"] + ": " + Products[i]["price"] + "(" + Products[i]["discount"] + ") :" + Products[i]["barcode"] + "</option>");
+                    }
+                }
+            });
+            $.ajax({
+                url: "/api/mainapi/customer_getall",
+                success: function (data) {
+                    console.log("Customer from ajax request");
+                    console.log(data);
+                    for (var i = 0; i < data.length; i++) {
+                        var Customer = {};
+                        Customer.id = data[i]["id"];
+                        Customer.name = data[i]["name"];
+                        Customer.phone = data[i]["phone"];
+                        Customers.push(Customer);
+                    }
+                    console.log("Customer customer Array");
+                    console.log(Customer);
+                    for (var i = 0; i < Customers.length; i++) {
+
+                        $("#customeritems").append("<option id=" + Customers[i]["id"] + ">" + Customers[i]["name"] + ": " + Customers[i]["phone"] + "</option>");
+                        feather.replace();
+                    }
+                }
+            });
+
+        }
+        function addProductToSaleList(SaleItem) {
+            console.log(SaleItem);
+            for (var i = 0; i < SaleList.length; i++) {
+                if (SaleList[i]["id"] == SaleItem["id"]) {
+                    if (CheckInvenotry(SaleList[i], 1)) {
+                        SaleList[i]["quantity"] += 1;
+                    }
+                    console.log(SaleList);
+                    UpdateTable();
+                    return;
+                }
+            }
+            if (CheckInvenotry(SaleItem, 0)) {
+                SaleList.push(SaleItem);
+            }
+            console.log(SaleList);
+            UpdateTable();
+        }
+        function CheckInvenotry(sellingProduct, plus) {
+            return true;
+            for (var i = 0; i < Products.length; i++) {
+                if (Products[i]["id"] == sellingProduct["id"]) {
+                    if ((sellingProduct["quantity"] + plus) > Products[i]["quantity"]) {
+                        alertify.error("Remaining Quantity of " + Products[i]["name"] + " is " + Products[i]["quantity"]);
+                        return false;
+                    }
+                    else {
+                        return true;
+                    }
+                }
+            }
+        }
+        function minusProductFromSaleList(SaleItem) {
+            console.log(SaleItem);
+            for (var i = 0; i < SaleList.length; i++) {
+                if (SaleList[i]["id"] == SaleItem["id"]) {
+                    if (SaleList[i]["quantity"] > 1) {
+                        SaleList[i]["quantity"] -= 1;
+                    }
+                    else {
+                        deleteProductFromSaleList(SaleItem);
+                    }
+                    console.log(SaleList);
+                    UpdateTable();
+                    return;
+                }
+            }
+        }
+        function deleteProductFromSaleList(SaleItem) {
+            console.log(SaleItem);
+            for (var i = 0; i < SaleList.length; i++) {
+                if (SaleList[i]["id"] == SaleItem["id"]) {
+                    SaleList.splice(i, 1);
+                    console.log(SaleList);
+                    UpdateTable();
+                    return;
+                }
+            }
+        }
+        function UpdateTable() {
+            $("#tbody1").empty();
+            var DiscountedBill = 0;
+            var TotalBill = 0;
+            for (var i = 0; i < SaleList.length; i++) {
+                var discountedPrice = SaleList[i]["price"] - SaleList[i]["discount"];
+                var itemDiscountedTotal = discountedPrice * SaleList[i]["quantity"];
+                var itemTotal = SaleList[i]["price"] * SaleList[i]["quantity"];
+                $("#tbody1").append("<tr id='row" + SaleList[i]["id"] + "'><td>" + SaleList[i]["id"] + "</td><td>" + SaleList[i]["name"] + "</td><td>" + SaleList[i]["price"] + "</td><td>" + SaleList[i]["discount"] + "</td><td>" + discountedPrice + "</td><td>" + SaleList[i]["quantity"] + "</td><td>" + itemDiscountedTotal + "</td><td><span id='span" + SaleList[i]["id"] + "' onclick='addItemFromTable(this.id)' data-feather='plus-square'></span><span id='span" + SaleList[i]["id"] + "' onclick='minusItemFromTable(this.id)' data-feather='minus-square'></span><span id='span" + SaleList[i]["id"] + "' onclick='deleteItemFromTable(this.id)' data-feather='delete'></span></td></tr>");
+                DiscountedBill += itemDiscountedTotal;
+                TotalBill += itemTotal;
+            }
+            $("#DiscountedBill").text(DiscountedBill);
+            $("#TotalBill").text(TotalBill);
+            $("#TotalPayment").val(DiscountedBill)
+            feather.replace();
+        }
+        function addItemFromTable(id) {
+            var splicedId = id.substring(4);
+            var productRowId = "row" + splicedId;
+            var product = getProductFromTableRow(productRowId);
+            addProductToSaleList(product);
+        }
+        function minusItemFromTable(id) {
+            var splicedId = id.substring(4);
+            var productRowId = "row" + splicedId;
+            var product = getProductFromTableRow(productRowId);
+            minusProductFromSaleList(product);
+        }
+        function deleteItemFromTable(id) {
+            var splicedId = id.substring(4);
+            var productRowId = "row" + splicedId;
+            var product = getProductFromTableRow(productRowId);
+            deleteProductFromSaleList(product);
+        }
+        function getProductFromTableRow(productRowId) {
+            var productRowChildren = $("#" + productRowId).children();
+            var product = {};
+            product.id = productRowChildren[0].innerText;
+            product.name = productRowChildren[1].innerText;
+            product.price = parseFloat(productRowChildren[2].innerText);
+            product.quantity = parseFloat(productRowChildren[3].innerText);
+            return product;
+        }
+        function unSelectCustomer() {
+            $("#CustomerId").text("");
+            $("#CustomerName").text("");
+            $("#CustomerPhone").text("");
+        }
+        
+        function SaleThroughEndCommand()
+        {
+            console.log("SaleThroughEndCommand called");
+            if ($("#Ledger").is(':checked') == true) {
+                alertify.error("Ledger Sale Can Not be Done through this command");
+                return false;
+            }
+            SaleDone();
+        }
+        function SaleThroughtSaleButton()
+        {
+            if ($("#Ledger").is(':checked') == false) {
+                alertify.error("Normal Sale Can Not be Done through this command");
+                return false;
+            }
+            SaleDone();
+        }
+        function SaleDone() {
+            console.log("SaleDone called");
+            if (SaleList.length == 0) {
+                alertify.error("Please Enter Products");
+                return false;
+            }
+            if ($("#TotalPayment").val() == "") {
+                alertify.error("Please enter some ammount. Enter 0 if not receiving amount");
+                return false;
+            }
+            var SaleModel = {};
+            
+            if (SaleModel.CustomerId == 0) {
+                if (parseFloat($("#TotalPayment").val()) < parseFloat($("#DiscountedBill").text())) {
+                    alertify.error("Ledger Transaction. Please Select a Customer");
+                    return false;
+                }
+            }
+            SaleModel.TotalPayment = parseFloat($("#TotalPayment").val());
+            SaleModel.DiscountedBill = parseFloat($("#DiscountedBill").text());
+            SaleModel.TotalBill = parseFloat($("#TotalBill").text());
+            SaleModel.SaleList = new Array();
+            for (var i = 0; i < SaleList.length; i++) {
+                var SaleItem = SaleList[i];
+                SaleModel.SaleList.push(SaleItem);
+            }
+            console.log(SaleModel);
+            SaleModel.CustomerId = 0;
+            SaleModel.Ledger = false;
+            if ($("#Ledger").is(':checked') == true)
+            {
+                if ($("#CustomerId").text() == "") {
+                    alertify.error("No customer is Selected. Please select customer");
+                    return false;
+                }
+                if (SaleModel.DiscountedBill <= SaleModel.TotalPayment)
+                {
+                    alertify.error("Ledger can not be done. Payment should be less than Bill");
+                    return false;
+                }
+                SaleModel.Ledger = true;
+                SaleModel.CustomerId = parseFloat($("#CustomerId").text());
+
+            }
+            alertify.success("Saving Sale");
+         
+            showLoader();
+            $.ajax({
+                url: "/api/mainapi/NewSale",
+                type: 'post',
+                data: SaleModel,
+                success: function (data) {
+                    console.log(data);
+
+                    if (data != 0) {
+                        alertify.success("Sale Saved");
+                        // format: http://localhost:2259/?SaleId=2&DiscountedBill=1000&Font=Verdana&Change=100&SaleList=surf%20excel@100@1@100*brite%20total@10@5@10
+                        var ChangeFromChangeModal = $("#ChangeModal_Para_Change").text();
+                        var PrintingQuery = "http://localhost:2259?SaleId=" + data + "&DiscountedBill=" + SaleModel.DiscountedBill + "&Font=Verdana&Change=" + ChangeFromChangeModal+"&SaleList=";
+                        for (var i = 0; i < SaleModel.SaleList.length; i++) {
+                            var itemstring = "";
+                            if (i == 0) {
+                                itemstring = "";
+                            } else {
+                                itemstring = "*";
+                            }
+                            var item = SaleModel.SaleList[i];
+                            itemstring += item['name'];
+                            itemstring += "@@" + (item['price'] - item['discount']);
+                            itemstring += "@@" + item['quantity'];
+                            itemstring += "@@" + ((item['price'] - item['discount']) * item['quantity']);
+                            PrintingQuery += itemstring;
+                        }
+                        console.log(PrintingQuery);
+                        if ($("#PrintReceipt").is(':checked') == true) {
+                            console.log("Sending Print Command");
+                            alertify.success("Sending Print Commannd");
+                            $.ajax({
+                                url: PrintingQuery,
+                                success: function (data) {
+                                    console.log(data);
+                                    hideLoader();
+                                    setTimeout(function () { window.location.reload(); }, 5000);
+                                },
+                                error: function (data) {
+                                    console.log(data);
+                                    hideLoader();
+                                    setTimeout(function () { window.location.reload(); }, 5000);
+                                }
+                            });
+                        }
+                        setTimeout(function () { window.location.reload(); }, 5000);
+                    }
+                    else {
+                        alertify.error("Sale Not Saved");
+                        hideLoader();
+                        setTimeout(function () { window.location.reload(); }, 5000);
+                    }
+                },
+                error: function (data) {
+                    console.log(data);
+                    alertify.error("Sale Not Saved");
+                    hideLoader();
+                }
+            });
+        }
+
+        function ShowChangeModalForGettingChange() {
+            console.log("ShowChangeModalForGettingChange called");
+            $("#ChangeModal_Input_DiscountdBill").val($("#DiscountedBill").text());
+            $("#Modal_GetChangeWhenSaleDone").modal("show");
+            $("#ChangeModal_Input_TotalPaying").focus();
+        }
+        function ChangeModal_Input_TotalPaying_OnKeyDownEvent()
+        {
+            console.log("ChangeModal_Input_TotalPaying_OnKeyDownEvent called");
+            var TotalPayningInChangeModal = parseFloat($("#ChangeModal_Input_TotalPaying").val());
+            var TotalDiscountedBillInChangeModal = parseFloat($("#ChangeModal_Input_DiscountdBill").val());
+            console.log(TotalPayningInChangeModal);
+            console.log(TotalDiscountedBillInChangeModal);
+            
+            $("#ChangeModal_Para_Change").text(TotalPayningInChangeModal - TotalDiscountedBillInChangeModal);
+        }
+        function ChangeGotForm_ChangeModal()
+        {
+            console.log("ChangeGotForm_ChangeModal called");
+            $("#Modal_GetChangeWhenSaleDone").modal("hide");
+            SaleThroughEndCommand();
+        }
+    </script>
+    <script>
+        feather.replace();
+        function showTime() {
+            var date = new Date();
+            var h = date.getHours(); // 0 - 23
+            var m = date.getMinutes(); // 0 - 59
+            var s = date.getSeconds(); // 0 - 59
+            var session = "AM";
+
+            if (h == 0) {
+                h = 12;
+            }
+
+            if (h > 12) {
+                h = h - 12;
+                session = "PM";
+            }
+
+            h = (h < 10) ? "0" + h : h;
+            m = (m < 10) ? "0" + m : m;
+            s = (s < 10) ? "0" + s : s;
+
+            var hour = h + ":" + m;
+            var second = s;
+            var ampm = session;
+            document.getElementById("dc_hour").innerText = hour;
+            document.getElementById("dc_second").textContent = second;
+            document.getElementById("dc_ampm").textContent = session;
+
+            document.getElementById("DateStamp").textContent = new Date().toDateString();
+            setTimeout(showTime, 1000);
+
+        }
+        showTime();
+    </script>
+</body>
+</html>

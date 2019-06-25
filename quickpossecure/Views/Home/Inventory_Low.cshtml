@@ -1,0 +1,130 @@
+﻿<main>
+    <div class="">
+        <h4>Low Inventory</h4>
+        <hr />
+        <div class="grid">
+            <div class="row">
+                <div class="table-responsive">
+                    <table id="Product_Table" class="table table-hover table-dark table-striped table-sm">
+                        <thead>
+                            <tr>
+                                <th scope="col">Id</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Bar</th>
+                                <th scope="col">Qty</th>
+                                <th scope="col">Low Inventory Notice</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</main>
+
+@section scripts{
+    <script>
+        var Products;
+        PopulateDate();
+        var DataTable;
+        function PopulateDate()
+        {
+            var spinner = new Spinner().spin();
+            $("#Product_Table tbody").append(spinner.el);
+            $.ajax({
+                url: '/api/mainapi/product_getall_inventory_low',
+                success: function (data) {
+                    Products = data;
+                    console.log("All Products Low Inventory");
+                    console.log(data);
+                    var fragment = document.createDocumentFragment();
+                    for (var i = 0; i < data.length; i++) {
+                        if (data[i]['type'] == 'Product')
+                        {
+                            $(fragment).append("<tr><td>" + data[i]["id"] + "</td><td>" + data[i]["name"] + "</td><td>" + data[i]["barcode"] + "</td><td>" + data[i]["quantity"] + "</td><td>" + data[i]["lowInventoryNotification"] + "</td></tr>");
+
+                        }
+
+                    }
+                    $("#Product_Table tbody").append(fragment);
+                    feather.replace();
+                    spinner.stop();
+                    DataTable = $("#Product_Table").DataTable({
+                        "dom": "<'row'<'col-sm-2'f><'col-sm-6'p><'col-sm-4 text-right'B>>",
+                        "buttons": [
+                            'colvis',
+                            'excelHtml5',
+                            'pdfHtml5'
+                        ],
+                    });
+                },
+                error: function (data) {
+                    console.log(data);
+                    alertify.error('Action Failed');
+                }
+            });
+            $.ajax({
+                url: '/api/mainapi/vendor_getall',
+                success: function (data) {
+                    console.log(data);
+                    console.log("All Vendors");
+                    var FK_Vendor_Id_SelectList = document.getElementsByName("FkVendorId");
+                    for (var i = 0; i < data.length; i++) {
+                        $(FK_Vendor_Id_SelectList[0]).append("<option value='" + data[i]["id"] + "'>" + data[i]["name"] + "</option> ");
+                        $(FK_Vendor_Id_SelectList[1]).append("<option value='" + data[i]["id"] + "'>" + data[i]["name"] + "</option> ");
+                    }
+                },
+                error: function (data) {
+                    console.log(data);
+                }
+            });
+            $.ajax({
+                url: '/api/mainapi/manufacturer_getall',
+                success: function (data) {
+                    console.log(data);
+                    console.log("All Manufacturers");
+                    var FK_Manufacturer_Id_SelectList = document.getElementsByName("FkManufacturerId");
+                    for (var i = 0; i < data.length; i++) {
+                        $(FK_Manufacturer_Id_SelectList[0]).append("<option value='" + data[i]["id"] + "'>" + data[i]["name"] + "</option> ");
+                        $(FK_Manufacturer_Id_SelectList[1]).append("<option value='" + data[i]["id"] + "'>" + data[i]["name"] + "</option> ");
+                    }
+                },
+                error: function (data) {
+                    console.log(data);
+                }
+            });
+            $.ajax({
+                url: '/api/mainapi/category_getall',
+                success: function (data) {
+                    console.log(data);
+                    console.log("All Categories");
+                    var FK_Category_Id_SelectList = document.getElementsByName("FkCategoryId");
+                    for (var i = 0; i < data.length; i++) {
+                        $(FK_Category_Id_SelectList[0]).append("<option value='" + data[i]["id"] + "'>" + data[i]["name"] + "</option> ");
+                        $(FK_Category_Id_SelectList[1]).append("<option value='" + data[i]["id"] + "'>" + data[i]["name"] + "</option> ");
+                    }
+                },
+                error: function (data) {
+                    console.log(data);
+                }
+            });
+            $.ajax({
+                url: '/api/mainapi/rack_getall',
+                success: function (data) {
+                    console.log(data);
+                    console.log("All Racks");
+                    var FK_Category_Id_SelectList = document.getElementsByName("FkRackId");
+                    for (var i = 0; i < data.length; i++) {
+                        $(FK_Category_Id_SelectList[0]).append("<option value='" + data[i]["id"] + "'>" + data[i]["name"] + "</option> ");
+                    }
+                },
+                error: function (data) {
+                    console.log(data);
+                }
+            });
+         }
+
+    </script>
+}

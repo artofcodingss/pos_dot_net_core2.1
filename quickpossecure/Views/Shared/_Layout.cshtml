@@ -1,0 +1,188 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using quickpossecure.Models
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+<html !DOCTYPE>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Business Book - Sale Fast</title>
+    <link rel="stylesheet" href="~/libs/bootstrap.css" />
+    <link href="~/libs/fontawesom.min.css" rel="stylesheet" />
+    <link href="~/libs/alertify.min.css" rel="stylesheet" />
+    <link href="~/libs/alertifybootstrap.min.css" rel="stylesheet" />
+    <link href="~/libs/dataTables.bootstrap4.css" rel="stylesheet" />
+    <link href="~/libs/buttons.bootstrap4.css" rel="stylesheet" />
+    <link href="~/libs/colReorder.bootstrap4.css" rel="stylesheet" />
+    <link href="~/libs/rowReorder.bootstrap4.css" rel="stylesheet" />
+    <link href="~/libs/select.bootstrap4.css" rel="stylesheet" />
+    <link href="~/css/home.css" rel="stylesheet" /> 
+</head>
+<body>
+    <div class="child_div_inlineblock" style="border-bottom: 1px solid lightgrey;padding-top: 6px;padding-bottom: 6px">
+        <div style="width:50%">
+            <img style="width:40px;float:left" src="~/images/UGS-HEADER-LOGO.png" />
+            <p style="margin-top: 19px;font-size: 24px;font-weight: bold;line-height: 0;    padding-left: 2em;">
+                Business Book
+            </p>
+        </div>
+        <div class="child_div_inlineblock" style="width:30%;float: right;text-align: right;font-size: 24px;font-weight: bold">
+            <div>
+                <p>@UserManager.GetUserName(User)</p>
+            </div>
+            <div>
+                <p>ID: 4025</p>
+            </div>
+            <div>
+                <a href="/Account/Logout">
+                <i class="fa fa-power-off hover_opacity bg-success" style="font-size:18px;padding:5px;color:white;border-radius: 50%"></i>
+                    
+                    </a>
+            </div>
+        </div>
+    </div>
+    <div class="child_div_inlineblock" style="height:42px;border-bottom:1px solid lightgrey;padding-top: 8px">
+        <div class="child_div_inlineblock" style="width:80%;margin-top: -4px">
+            <div class="attadropdown">
+                <button class="attabutton main_navagation_button_hover" id="topnavigationlink_dashboard" onclick="topnavigationlinkclicked(event,'/home/index','topnavigationlink_dashboard')">Dashboard</button>
+            </div>
+            <div class="attadropdown">
+                <button class="attabutton main_navagation_button_hover" id="topnavigationlink_customer">Customer</button>
+                <div class="attadropdown-content">
+                    <a href="/home/customer" onclick="topnavigationlinkclicked(event,'/home/customer','topnavigationlink_customer')">Customers</a>
+                    <a href="/home/CustomerLedger" onclick="topnavigationlinkclicked(event,'/home/CustomerLedger','topnavigationlink_customer')">Customer Ledger</a>
+                </div>
+            </div>
+            <div class="attadropdown">
+                <button class="attabutton main_navagation_button_hover" id="topnavigationlink_vendor">Vendor</button>
+                <div class="attadropdown-content">
+                    <a href="/home/Vendor" onclick="topnavigationlinkclicked(event,'/home/Vendor','topnavigationlink_vendor')">Vendors</a>
+                    <a href="/home/VendorLedger" onclick="topnavigationlinkclicked(event,'/home/VendorLedger','topnavigationlink_vendor')">Vendor Ledger</a>
+                </div>
+            </div>
+            <div class="attadropdown">
+                <button class="attabutton main_navagation_button_hover" id="topnavigationlink_setup">Setup</button>
+                <div class="attadropdown-content">
+                    <a href="/home/Category" onclick="topnavigationlinkclicked(event,'/home/Category','topnavigationlink_setup')">Category</a>
+                    <a href="/home/Manufacturer" onclick="topnavigationlinkclicked(event,'/home/Manufacturer','topnavigationlink_setup')">Manufacturer</a>
+                    <a href="/home/Rack" onclick="topnavigationlinkclicked(event,'/home/Rack','topnavigationlink_setup')">Rack Spacing</a>
+                </div>
+            </div>
+            <div class="attadropdown">
+                <button class="attabutton main_navagation_button_hover" id="topnavigationlink_account">Accounts</button>
+                <div class="attadropdown-content">
+                    <a href="/home/ChartOfAccount" onclick="topnavigationlinkclicked(event,'/home/ChartOfAccount','topnavigationlink_account')">Accounts</a>
+                    <a href="/home/Expences" onclick="topnavigationlinkclicked(event,'/home/Expences','topnavigationlink_account')">Expences</a>
+                    <a href="/home/Asset" onclick="topnavigationlinkclicked(event,'/home/Asset','topnavigationlink_account')">Asset</a>
+                    <a href="/home/Income" onclick="topnavigationlinkclicked(event,'/home/Income','topnavigationlink_account')">Income</a>
+                    <a href="/home/Equity" onclick="topnavigationlinkclicked(event,'/home/Equity','topnavigationlink_account')">Equity</a>
+                    <a href="/home/AllTransactions" onclick="topnavigationlinkclicked(event,'/home/AllTransactions','topnavigationlink_account')">Transactions</a>
+                    <a href="/home/AllProductTransactions" onclick="topnavigationlinkclicked(event,'/home/AllProductTransactions','topnavigationlink_account')">Product Transactions</a>
+                </div>
+            </div>
+            <div class="attadropdown">
+                <button class="attabutton main_navagation_button_hover" id="topnavigationlink_staff">Staff</button>
+                <div class="attadropdown-content">
+                    <a href="/home/Staff" onclick="topnavigationlinkclicked(event,'/home/Staff','topnavigationlink_staff')">Staff</a>
+                    <a href="/account/Register" onclick="topnavigationlinkclicked(event,'/account/Register','topnavigationlink_staff')">Register</a>
+                    <a href="/account/AssignRoles" onclick="topnavigationlinkclicked(event,'/account/AssignRoles','topnavigationlink_staff')">Roles</a>
+                </div>
+            </div>
+            <div class="attadropdown">
+                <button class="attabutton main_navagation_button_hover" id="topnavigationlink_reports">Reports</button>
+                <div class="attadropdown-content">
+                    <a href="/home/AllSale" onclick="topnavigationlinkclicked(event,'/home/AllSale','topnavigationlink_reports')">Sale</a>
+                    <a href="/home/AllPurchase" onclick="topnavigationlinkclicked(event,'/home/AllPurchase','topnavigationlink_reports')">Purchase</a>
+                </div>
+            </div>
+            <div class="attadropdown">
+                <button class="attabutton main_navagation_button_hover" id="topnavigationlink_inventory">Inventory</button>
+                <div class="attadropdown-content">
+                    <a href="/home/Product" onclick="topnavigationlinkclicked(event,'/home/Product','topnavigationlink_inventory')">Products</a>
+                    <a href="/home/Inventory_Low" onclick="topnavigationlinkclicked(event,'/home/Inventory_Low','topnavigationlink_inventory')">Low Inventory</a>
+                    <a href="/home/Product_Batch" onclick="topnavigationlinkclicked(event,'/home/Product_Batch','topnavigationlink_inventory')">Batch</a>
+                    <a href="/home/Purchase" onclick="topnavigationlinkclicked(event,'/home/Purchase','topnavigationlink_inventory')">Purchase</a>
+                </div>
+            </div>
+            <div class="attadropdown">
+                <button class="attabutton main_navagation_button_hover" id="topnavigationlink_sale">Sale</button>
+                <div class="attadropdown-content">
+                    <a href="/home/Sale" onclick="topnavigationlinkclicked(event,'/home/Sale','topnavigationlink_sale')">Sale</a>
+                    <a href="/home/SaleBarcode" onclick="topnavigationlinkclicked(event,'/home/SaleBarcode','topnavigationlink_sale')">Barcode Sale</a>
+                </div>
+            </div>
+            <div class="attadropdown">
+                <button class="attabutton main_navagation_button_hover" id="topnavigationlink_others">Others</button>
+                <div class="attadropdown-content">
+                    <a href="/home/SaleReturn" onclick="topnavigationlinkclicked(event,'/home/SaleReturn','topnavigationlink_others')">Sale Return</a>
+                    <a href="/home/PurchaseReturn" onclick="topnavigationlinkclicked(event,'/home/PurchaseReturn','topnavigationlink_others')">Purchase Return</a>
+                    <a href="" onclick="topnavigationlinkclicked(event, window.location, 'topnavigationlink_others')">Sale Orders</a>
+                    <a href="" onclick="topnavigationlinkclicked(event, window.location, 'topnavigationlink_others')">Purchase Orders</a>
+                    <a href="/home/Closing" onclick="topnavigationlinkclicked(event,'/home/Closing','topnavigationlink_others')">Daily Closing</a>
+                    <a href="/home/Notification" onclick="topnavigationlinkclicked(event,'/home/Notification','topnavigationlink_others')">Notification</a>
+                    <a href="" onclick="topnavigationlinkclicked(event, window.location, 'topnavigationlink_others')">Financial Closing</a>
+                    <a href="" onclick="topnavigationlinkclicked(event, window.location, 'topnavigationlink_others')">Setting</a>
+                    <a href="/home/AboutSoftware" onclick="topnavigationlinkclicked(event,'/home/AboutSoftware','topnavigationlink_others')">About</a>
+                </div>
+            </div>
+        </div>
+        
+        <div style="width:20%;margin-top: 10px;float: right;">
+            <p style="text-align:right;font-size:22px;font-weight:bold;line-height:0"><span id="MonthNameinLayout"></span> <span id="YearinLayout"></span></p>
+        </div>
+    </div>
+    @RenderBody()
+    <div style="text-align:right;padding-top:6px" class="div_footer child_div_inlineblock">
+        <div>
+            <img style="width: 130px;" src="~/images/businessbook_logo.png" />
+        </div>
+        <div style="float:right;padding-left: 10px;">
+            <p>Business Management System</p>
+        </div>
+    </div>
+    <script src="~/libs/jquery.min.js"></script>
+    <script src="~/libs/popper.min.js"></script>
+    <script src="~/libs/bootstrap.js"></script>
+    <script src="~/libs/feather.js"></script>
+    <!-- Graphs -->
+    <script src="~/libs/Charts.js"></script>
+    <script src="~/libs/alertify.min.js"></script>
+    <script src="~/libs/spin.js"></script>
+    <script src="~/libs/jszip.min.js"></script>
+    <script src="~/libs/pdfmake.js"></script>
+    <script src="~/libs/vfs_fonts.js"></script>
+    <script src="~/libs/jquery.dataTables.js"></script>
+    <script src="~/libs/dataTables.bootstrap4.js"></script>
+    <script src="~/libs/dataTables.buttons.js"></script>
+    <script src="~/libs/buttons.bootstrap4.js"></script>
+    <script src="~/libs/buttons.colVis.js"></script>
+    <script src="~/libs/buttons.html5.js"></script>
+    <script src="~/libs/buttons.print.js"></script>
+    <script src="~/libs/dataTables.colReorder.js"></script>
+    <script src="~/libs/dataTables.rowReorder.js"></script>
+    <script src="~/libs/dataTables.select.js"></script>
+    <script src="~/js/home.js"></script>
+    <script>
+        var topnavigationactivemenuid = localStorage.getItem("topnavigationactivemenu");
+        console.log(topnavigationactivemenuid);
+        if (topnavigationactivemenuid != undefined) {
+            $(("#" + topnavigationactivemenuid)).addClass("main_navagation_button_active");
+        }
+        function topnavigationlinkclicked(event, url, element) {
+            localStorage.setItem("topnavigationactivemenu", element);
+            event.preventDefault();
+            console.log("event");
+            console.log(url);
+            console.log(element);
+            event.stopPropagation();
+            window.location = url;
+            return false;
+        }
+
+        $("#MonthNameinLayout").text(thisMonthName)
+        $("#YearinLayout").text(thisYear)
+    </script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

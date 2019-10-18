@@ -33,7 +33,7 @@ namespace quickpossecure.Models.dbentities
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseMySql("Server=MYSQL5012.site4now.net;Database=db_a3b6ec_pos;Uid=a3b6ec_pos;Pwd=capital_6891");
+                optionsBuilder.UseMySql("server=localhost;port=3306;database=quickpos;user=root;password=");
             }
         }
 

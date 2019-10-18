@@ -5,3 +5,4 @@ Scaffold-DbContext "server=localhost;port=3306;database=quickpos;user=root" "Pom
 
 dotnet publish -c release -r win10-x64
 dotnet publish -c release -r win10-x86
+dotnet publish -c release -r win7-x86
